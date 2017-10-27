@@ -10,11 +10,11 @@
 		<module>webf-demo</module>
 	</modules>
 	<developers>
-	   <developer>
-	      <id>mikewt</id>
-	      <name>wang.tao</name>
-	      <email>forwangtao@gmail.com</email>
-	   </developer>
+		<developer>
+			<id>mikewt</id>
+			<name>wang.tao</name>
+			<email>forwangtao@gmail.com</email>
+		</developer>
 	</developers>
 	<properties>
 		<java.version>1.7</java.version>
@@ -27,9 +27,34 @@
 		<fastjson.version>1.2.33</fastjson.version>
 		<ojdbc.version>11.2.0.3.0</ojdbc.version>
 		<mysql.connector.version>3.0.8</mysql.connector.version>
+		<spring.context.version>4.3.12.RELEASE</spring.context.version>
+		<slf4j.api>1.7.21</slf4j.api>
+		<slf4j.log4j12>1.7.21</slf4j.log4j12>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.api}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.log4j12}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.context.version}</version>
+				<optional>true</optional>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>

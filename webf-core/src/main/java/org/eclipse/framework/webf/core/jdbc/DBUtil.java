@@ -78,7 +78,6 @@ public class DBUtil {
 		try {
 			conn = JdbcUtil.getConnection();
 			String totalsql="select count(1) as total from ( "+sql+" )";
-			//System.out.println(sql);
 			ps = conn.prepareStatement(totalsql);
 			for (int i = 0; i < param.length; i++) {
 				ps.setObject(i + 1, param[i]);
