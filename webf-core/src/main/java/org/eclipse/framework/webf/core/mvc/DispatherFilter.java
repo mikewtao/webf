@@ -1,4 +1,4 @@
-package org.eclipse.framework.webf.core;
+package org.eclipse.framework.webf.core.mvc;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.eclipse.framework.webf.core.RequestParam;
 import org.eclipse.framework.webf.core.annotation.Handler;
 import org.eclipse.framework.webf.core.annotation.JSON;
 import org.eclipse.framework.webf.core.annotation.Module;
@@ -174,6 +174,10 @@ public class DispatherFilter implements Filter {
 
 	// 只在应用启动的时候进行注册 
 	public void init(FilterConfig fConfig) throws ServletException {
+		 //initConfig()
+		//scanclass();//扫描module类
+		//mapinghandler();//映射url处理器
+		//buildDependency()//注入依赖
 		logger.info("webf initilize....");
 		String scanPackage = fConfig.getInitParameter("scanPackage");
 		ClassScan classScan = new ClassScan();
