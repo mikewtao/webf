@@ -5,8 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.eclipse.framework.webf.core.pojo.Page;
-import org.eclipse.framework.webf.core.pojo.PageInfo;
 import org.eclipse.framework.webf.demo.dao.LoginDao;
 import org.eclipse.framework.webf.demo.service.LoginService;
 
@@ -23,10 +21,5 @@ public class LoginServiceImpl implements LoginService {
 		return loginDao.getAllStudentFromDB();
 	}
 
-	@Override
-	public Page getAllResult(PageInfo pageInfo) {
-		return loginDao.getAllResultByPage(pageInfo);
-	}
-	
 	
 }

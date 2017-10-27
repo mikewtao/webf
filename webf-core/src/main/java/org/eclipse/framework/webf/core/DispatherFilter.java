@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +41,7 @@ public class DispatherFilter implements Filter {
 	private static final Logger logger = LoggerFactory.getLogger(DispatherFilter.class);
 
 	private static final Map<String, RequestParam> urlHandlerMap = new ConcurrentHashMap<String, RequestParam>();//线程安全
-
+	
 	public void destroy() {
 		// 释放资源
 		urlHandlerMap.clear();

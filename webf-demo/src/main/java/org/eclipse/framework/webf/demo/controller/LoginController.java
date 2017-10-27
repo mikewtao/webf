@@ -11,13 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.framework.webf.core.annotation.Handler;
 import org.eclipse.framework.webf.core.annotation.JSON;
 import org.eclipse.framework.webf.core.annotation.Module;
-import org.eclipse.framework.webf.core.pojo.Page;
-import org.eclipse.framework.webf.core.pojo.PageInfo;
 import org.eclipse.framework.webf.demo.pojo.ExpressDetail;
 import org.eclipse.framework.webf.demo.service.LoginService;
 
 
-@Module(name = "user",desc="µ«¬ºƒ£øÈ")
+@Module(name = "user",desc="Áî®Êà∑Ê®°Âùó")
 public class LoginController {
 	@Inject
 	private LoginService loginService;
@@ -43,9 +41,4 @@ public class LoginController {
 		return detail;
 	}
 	
-	@JSON
-	@Handler(value = "getAllResult")
-	public Page getAllResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		return loginService.getAllResult(new PageInfo(2, 10));
-	}
 }
