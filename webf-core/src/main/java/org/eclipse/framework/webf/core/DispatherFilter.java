@@ -1,6 +1,7 @@
 package org.eclipse.framework.webf.core;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,10 +19,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.eclipse.framework.webf.core.annotation.Handler;
 import org.eclipse.framework.webf.core.annotation.JSON;
 import org.eclipse.framework.webf.core.annotation.Module;
+import org.eclipse.framework.webf.core.annotation.XML;
 import org.eclipse.framework.webf.core.exception.InitializedException;
 import org.eclipse.framework.webf.core.utils.ClassScan;
 import org.eclipse.framework.webf.core.utils.JavaassitUtil;
@@ -65,7 +69,7 @@ public class DispatherFilter implements Filter {
 					injectParam(res, resp, paramClzz, names, methodParams, i);//处理方法（handler）参数注入
 
 				}
-				fowardView(request, response, res, resp, obj, m, methodParams);//处理结果
+				fowardView(res, resp, obj, m, methodParams);//处理结果
 				logger.info("url:{} handler:{} has been handled",new Object[]{uri.replaceAll(contextPath, ""),m.getName()});
 			} catch (Exception e) {
 				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);//返回500
@@ -126,36 +130,44 @@ public class DispatherFilter implements Filter {
 		}
 	}
 
-	private void fowardView(ServletRequest request, ServletResponse response, HttpServletRequest res,
-			HttpServletResponse resp, Object obj, Method m, List<Object> methodParams)
+	private void fowardView(HttpServletRequest request,HttpServletResponse response, Object obj, Method m, List<Object> methodParams)
 			throws IllegalAccessException, InvocationTargetException, ServletException, IOException {
-		// 没有返回值
-		if (m.getReturnType() == void.class) {
+		if (m.getReturnType() == void.class) {// 没有返回值
 			m.invoke(obj, methodParams.toArray());
-			// 返回string 试图
-		} else if (m.getReturnType() == String.class) {
+		} else if (m.getReturnType() == String.class) {// 返回string 试图
 			String path = (String) m.invoke(obj, methodParams.toArray());
 			path = "../" + path;
-			request.getRequestDispatcher(path).forward(res, resp);
+			request.getRequestDispatcher(path).forward(request,response);
 		} else {
-			// pojo 转换成json
 			Object jobj = m.invoke(obj, methodParams.toArray());
 			JSON json = m.getAnnotation(JSON.class);
-			if (json != null) {
-				String dateType = json.DateType();
-				resp.setContentType("text/html;charset=UTF-8");
-				resp.setCharacterEncoding("utf-8");
-				resp.setHeader("Pragma", "no-cache");
-				resp.setHeader("Cache-Control", "no-cache, must-revalidate");
-				resp.setHeader("Pragma", "no-cache");
+			XML xml=m.getAnnotation(XML.class);
+			if (json != null) {//需要转换成json格式
+				String data=JSONArray.toJSONStringWithDateFormat(jobj, json.DateType());
+				sendData(response,data);
+			}else if(xml!=null){//需要转换成xml格式  使用jaxb实现
 				try {
-					response.getWriter().write(JSONArray.toJSONStringWithDateFormat(jobj, dateType));
-					response.getWriter().flush();
-					response.getWriter().close();
-				} catch (IOException e) {
+					String data=bean2Xml(jobj, m.getReturnType());;
+					sendData(response,data);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private void sendData(HttpServletResponse resp, String data) {
+		resp.setContentType("text/html;charset=UTF-8");
+		resp.setCharacterEncoding("utf-8");
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Cache-Control", "no-cache, must-revalidate");
+		resp.setHeader("Pragma", "no-cache");
+		try {
+			resp.getWriter().write(data);
+			resp.getWriter().flush();
+			resp.getWriter().close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -233,6 +245,16 @@ public class DispatherFilter implements Filter {
 			}
 			field.set(obj, serviceObj);//再将service注入module
 		}
+	}
+	
+	public String bean2Xml(Object obj,Class<?> load) throws Exception{
+		JAXBContext context = JAXBContext.newInstance(load);
+		Marshaller marshaller = context.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "GBK");
+		StringWriter writer = new StringWriter();
+		marshaller.marshal(obj,writer);
+		return writer.toString();
 	}
 
 }
