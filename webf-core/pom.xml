@@ -62,7 +62,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
-
+		<!--  -->
+		<dependency>
+			<groupId>com.jfinal</groupId>
+			<artifactId>jfinal</artifactId>
+			<version>3.2</version>
+		</dependency>
+      
 	</dependencies>
 	<build>
 		<finalName>webf-core</finalName>

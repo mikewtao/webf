@@ -3,11 +3,11 @@ package org.eclipse.framework.webf.core.mvc;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.eclipse.framework.webf.core.RequestParam;
 import org.eclipse.framework.webf.core.annotation.Handler;
 import org.eclipse.framework.webf.core.annotation.JSON;
 import org.eclipse.framework.webf.core.annotation.Module;
@@ -35,13 +34,12 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONArray;
 
-
 public class DispatherFilter implements Filter {
- 
+
 	private static final Logger logger = LoggerFactory.getLogger(DispatherFilter.class);
 
-	private static final Map<String, RequestParam> urlHandlerMap = new ConcurrentHashMap<String, RequestParam>();//线程安全
-	
+	private static final Map<String, RequestParam> urlHandlerMap = new ConcurrentHashMap<String, RequestParam>();// 线程安全
+
 	public void destroy() {
 		// 释放资源
 		urlHandlerMap.clear();
@@ -53,7 +51,7 @@ public class DispatherFilter implements Filter {
 		HttpServletResponse resp = (HttpServletResponse) response;
 		String uri = res.getRequestURI();
 		if (uri.endsWith(".jsp") || uri.endsWith(".css") || uri.endsWith(".js") || uri.endsWith(".jpg")
-				|| uri.endsWith(".png")) {//过滤静态资源
+				|| uri.endsWith(".png")) {// 过滤静态资源
 			chain.doFilter(request, response);
 			return;
 		}
@@ -64,26 +62,25 @@ public class DispatherFilter implements Filter {
 				Object obj = params.getClazz();
 				Method m = params.getMethod();
 				Class<?>[] paramClzz = m.getParameterTypes();
-				String[] names = JavaassitUtil.getParams(obj.getClass(), m.getName());//获取方法参数名称
+				String[] names = JavaassitUtil.getParams(obj.getClass(), m.getName());// 获取方法参数名称
 				List<Object> methodParams = new ArrayList<Object>();
 				for (int i = 0; i < paramClzz.length; i++) {
-					injectParam(res, resp, paramClzz, names, methodParams, i);//处理方法（handler）参数注入
-
+					injectParam(res, resp, paramClzz, names, methodParams, i);// 处理方法（handler）参数注入
 				}
-				fowardView(res, resp, obj, m, methodParams);//处理结果
-				logger.info("url:{} handler:{} has been handled",new Object[]{uri.replaceAll(contextPath, ""),m.getName()});
+				fowardView(res, resp, obj, m, methodParams);// 处理结果
+				logger.info("url:{} handler:{} has been handled",
+						new Object[] { uri.replaceAll(contextPath, ""), m.getName() });
 			} catch (Exception e) {
-				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);//返回500
+				resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);// 返回500
 				e.printStackTrace();
 			}
 		} else {
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);//返回404
+			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);// 返回404
 		}
 	}
 
 	private void injectParam(HttpServletRequest res, HttpServletResponse resp, Class<?>[] paramClzz, String[] names,
-			List<Object> methodParams, int i)
-			throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+			List<Object> methodParams, int i) throws Exception {
 		String pName = paramClzz[i].getSimpleName();
 		String reqVal = res.getParameter(names[i]);
 		// 注入req resp 基本类型
@@ -105,7 +102,7 @@ public class DispatherFilter implements Filter {
 		} else if (pName.equals("float")) {
 			methodParams.add(Float.valueOf(reqVal));
 			return;
-		} else {//注入pojo
+		} else {// 注入pojo
 			Field[] fields = paramClzz[i].getDeclaredFields();
 			Object ojb = paramClzz[i].newInstance();
 			for (Field f : fields) {
@@ -131,25 +128,26 @@ public class DispatherFilter implements Filter {
 		}
 	}
 
-	private void fowardView(HttpServletRequest request,HttpServletResponse response, Object obj, Method m, List<Object> methodParams)
-			throws IllegalAccessException, InvocationTargetException, ServletException, IOException {
+	private void fowardView(HttpServletRequest request, HttpServletResponse response, Object obj, Method m,
+			List<Object> methodParams) throws Exception {
 		if (m.getReturnType() == void.class) {// 没有返回值
 			m.invoke(obj, methodParams.toArray());
 		} else if (m.getReturnType() == String.class) {// 返回string 试图
 			String path = (String) m.invoke(obj, methodParams.toArray());
 			path = "../" + path;
-			request.getRequestDispatcher(path).forward(request,response);
+			request.getRequestDispatcher(path).forward(request, response);
 		} else {
 			Object jobj = m.invoke(obj, methodParams.toArray());
 			JSON json = m.getAnnotation(JSON.class);
-			XML xml=m.getAnnotation(XML.class);
-			if (json != null) {//需要转换成json格式
-				String data=JSONArray.toJSONStringWithDateFormat(jobj, json.DateType());
-				sendData(response,data);
-			}else if(xml!=null){//需要转换成xml格式  使用jaxb实现
+			XML xml = m.getAnnotation(XML.class);
+			if (json != null) {// 需要转换成json格式
+				String data = JSONArray.toJSONStringWithDateFormat(jobj, json.DateType());
+				sendData(response, data);
+			} else if (xml != null) {// 需要转换成xml格式 使用jaxb实现
 				try {
-					String data=bean2Xml(jobj, m.getReturnType());;
-					sendData(response,data);
+					String data = bean2Xml(jobj, m.getReturnType());
+					;
+					sendData(response, data);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -172,93 +170,89 @@ public class DispatherFilter implements Filter {
 		}
 	}
 
-	// 只在应用启动的时候进行注册 
-	public void init(FilterConfig fConfig) throws ServletException {
-		 //initConfig()
-		//scanclass();//扫描module类
-		//mapinghandler();//映射url处理器
-		//buildDependency()//注入依赖
-		logger.info("webf initilize....");
-		String scanPackage = fConfig.getInitParameter("scanPackage");
-		ClassScan classScan = new ClassScan();
-		List<Class<?>> clzzList = new ArrayList<Class<?>>();
+	// 只在应用启动的时候进行注册
+	public void init(FilterConfig config) throws ServletException {
+		ClassScan classScan = ClassScan.getClassScan();
+		Set<String> clzzList = classScan.getClazzset();
 		try {
-			classScan.ScanAllClasses(scanPackage, clzzList);
 			logger.debug("scanning all class file in classpath");
-			for (Class<?> clzz : clzzList) {
+			for (String clzzStr : clzzList) {
 				Object obj = null;
 				try {
-					obj = clzz.newInstance();//先初始化controller
+					Class<?> clzz = Class.forName(clzzStr);
+					obj = clzz.newInstance();// 先初始化controller
 				} catch (Exception e) {
-					logger.error("class:{} initilize fail,cause:{}",new Object[]{clzz.getName(),e.getMessage()});
 					continue;
 				}
 				// 扫描module
 				Module moduleAnotation = obj.getClass().getAnnotation(Module.class);
 				Field[] fields = obj.getClass().getDeclaredFields();
 				if (moduleAnotation != null) {
-					Method[] methods = obj.getClass().getMethods();
-					// 方法
-					for (Method m : methods) {
-						RequestParam param = new RequestParam();
-						StringBuilder sb = new StringBuilder("/");
-						String moduleName = moduleAnotation.name();
-						sb.append(moduleName);
-						sb.append("/");
-						param.setClazz(obj);
-						Handler p = m.getAnnotation(Handler.class);
-						if (p != null) {
-							sb.append(p.value());
-							param.setMethod(m);
-							logger.info("url:{} handler:{}", new Object[] { sb.toString(), param.toString() });
-							urlHandlerMap.put(sb.toString(), param);
-						}
-					}
+					getUrlHandler(obj, moduleAnotation);
 					for (Field field : fields) {
-						logger.debug("module:{} type:{} field:{} need to be injected",new Object[]{clzz.getName(),field.getType().getSimpleName(),field.getName()});
-						injectClass(scanPackage, classScan, obj, field);
-						logger.debug("module:{} has been Injected",new Object[]{clzz.getName()});
+						injectClass(classScan, obj, field);
 					}
 				}
 				logger.info("webf has initilized....");
 			}
 		} catch (Exception e) {
-			throw new InitializedException("webf initilized error",e);
+			throw new InitializedException("webf initilized error", e);
 		}
 	}
 
-	private void injectClass(String scanPackage, ClassScan classScan, Object obj, Field field)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Inject inject = field.getAnnotation(Inject.class);//查找module类字段是否有需要注入字段，若有，递归注入
+	private void getUrlHandler(Object obj, Module moduleAnotation) {
+		Method[] methods = obj.getClass().getMethods();
+		// 方法
+		for (Method m : methods) {
+			RequestParam param = new RequestParam();
+			StringBuilder sb = new StringBuilder("/");
+			String moduleName = moduleAnotation.name();
+			sb.append(moduleName);
+			sb.append("/");
+			param.setClazz(obj);
+			Handler p = m.getAnnotation(Handler.class);
+			if (p != null) {
+				sb.append(p.value());
+				param.setMethod(m);
+				logger.info("url:{} handler:{}", new Object[] { sb.toString(), param.toString() });
+				urlHandlerMap.put(sb.toString(), param);
+			}
+		}
+	}
+
+	private void injectClass(ClassScan classScan, Object obj, Field field) throws Exception {
+		Inject inject = field.getAnnotation(Inject.class);// 查找module类字段是否有需要注入字段，若有，递归注入
 		if (inject != null) {
 			field.setAccessible(true);
-			List<Class<?>> namedClzzlist = classScan.getClassByInterface(scanPackage, field.getType());// 此处根据接口查找实现类 ClassScan
+			List<Class<?>> namedClzzlist = classScan.getClassByInterface(field.getType());// 此处根据接口查找实现类
+																							// ClassScan
 			Class<?> fieldCls = namedClzzlist.get(0);
 			Object serviceObj = fieldCls.newInstance();// 初始化service
 			Field[] serviceFields = serviceObj.getClass().getDeclaredFields();
 			for (Field serviceField : serviceFields) {
-				Inject serviceInject = serviceField.getAnnotation(Inject.class);//再次检查service类是否有需要注入的字段
+				Inject serviceInject = serviceField.getAnnotation(Inject.class);// 再次检查service类是否有需要注入的字段
 				if (serviceInject != null) {
-					logger.debug("service:{} type:{} field:{} need to be injected",new Object[]{fieldCls.getName(),serviceField.getType().getSimpleName(),serviceField.getName()});
-					List<Class<?>> daoClzzlist = classScan.getClassByInterface(scanPackage, serviceField.getType());
+					logger.debug("service:{} type:{} field:{} need to be injected", new Object[] { fieldCls.getName(),
+							serviceField.getType().getSimpleName(), serviceField.getName() });
+					List<Class<?>> daoClzzlist = classScan.getClassByInterface(serviceField.getType());
 					Class<?> servicefieldCls = daoClzzlist.get(0);
 					Object daoObj = servicefieldCls.newInstance();// 初始dao
 					serviceField.setAccessible(true);
-					serviceField.set(serviceObj, daoObj);//service注入dao
-					logger.debug("service:{} has been Injected",new Object[]{fieldCls.getName()});
+					serviceField.set(serviceObj, daoObj);// service注入dao
+					logger.debug("service:{} has been Injected", new Object[] { fieldCls.getName() });
 				}
 			}
-			field.set(obj, serviceObj);//再将service注入module
+			field.set(obj, serviceObj);// 再将service注入module
 		}
 	}
-	
-	public String bean2Xml(Object obj,Class<?> load) throws Exception{
+
+	public String bean2Xml(Object obj, Class<?> load) throws Exception {
 		JAXBContext context = JAXBContext.newInstance(load);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "GBK");
 		StringWriter writer = new StringWriter();
-		marshaller.marshal(obj,writer);
+		marshaller.marshal(obj, writer);
 		return writer.toString();
 	}
 

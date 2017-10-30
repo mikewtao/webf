@@ -1,4 +1,4 @@
-package org.eclipse.framework.webf.core;
+package org.eclipse.framework.webf.core.mvc;
 
 import java.lang.reflect.Method;
 
@@ -26,5 +26,5 @@ public class RequestParam {
 	public String toString() {
 		return "RequestParam [clazz=" + clazz + ", method=" + method.getName() + "]";
 	}
-  
+
 }
