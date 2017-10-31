@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface LoginDao {
 
-	List<Map<String,String>> getAllStudentFromDB();
+	List<Map<String,String>> getUserPay();
 	
 
 }

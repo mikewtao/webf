@@ -22,22 +22,22 @@
 	</named-config>
 	<named-config name="oracle">
 	    <property name="driverClass">oracle.jdbc.driver.OracleDriver</property>
-		<property name="jdbcUrl">jdbc:oracle:thin:@139.196.28.220:1521:otmdb</property>
-		<property name="user">hccn</property>
-		<property name="password">hccn</property>
+		<property name="jdbcUrl">jdbc:oracle:thin:@//192.168.1.215:1521/lottery</property>
+		<property name="user">cpweb</property>
+		<property name="password">cpweb</property>
 		<!-- 每60秒检查所有连接池中的空闲连接。Default: 0 -->
-        <property name="idleConnectionTestPeriod" value="60" />       
+        <property name="idleConnectionTestPeriod">60</property>   
         <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
-        <property name="maxIdleTime" value="60"/>
+        <property name="maxIdleTime">60</property>
         <!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->       
-        <property name="acquireRetryAttempts" value="30" />         
-        <property name="breakAfterAcquireFailure" value="true" />             
-        <property name="testConnectionOnCheckout" value="false" />
+        <property name="acquireRetryAttempts">30</property>         
+        <property name="breakAfterAcquireFailure">true</property>             
+        <property name="testConnectionOnCheckout">false</property>
         <!--连接池中保留的最小连接数。-->            
-        <property name="minPoolSize" value="5" />        
+        <property name="minPoolSize">5</property>        
         <!--连接池中保留的最大连接数。Default: 15 -->         
-        <property name="maxPoolSize" value="20" /> 
+        <property name="maxPoolSize">20</property>
         <!--测试连接的有效性 -->
-        <property name="preferredTestQuery" value="select 1 from dual"/>
+        <property name="preferredTestQuery">select 1 from dual</property>
 	</named-config>
 </c3p0-config> 

@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface LoginService {
 
-	List<Map<String,String>> findAllStudent();
+	List<Map<String,String>> getUserPay();
 }

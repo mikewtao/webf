@@ -21,7 +21,7 @@ public class MapperHandler implements ResultSetHandler {
         			String ColumnName=metadata.getColumnName(i+1);
         			Object columndata=rs.getObject(i+1);
         			if(!"RN".equals(ColumnName)){
-        				map.put(ColumnName, columndata.toString());
+        				map.put(ColumnName, columndata==null?"":columndata.toString());
         			}
         		}
         		list.add(map);

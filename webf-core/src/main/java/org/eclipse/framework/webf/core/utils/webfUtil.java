@@ -9,12 +9,16 @@ public class webfUtil {
 			Object obj = clzz.newInstance();
 			return obj;
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
 	
 	public static boolean isEmpty(String str){
 		return str==null||"".equals(str)||str.trim().length()==0;
+	}
+	
+	public static void main(String[] args) {
+		initClass("org.eclipse.framework.webf.core.InterceptorAdapter");
 	}
 }

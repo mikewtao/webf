@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.framework.webf.core.annotation.AutoFind;
 import org.eclipse.framework.webf.core.annotation.Handler;
 import org.eclipse.framework.webf.core.annotation.JSON;
 import org.eclipse.framework.webf.core.annotation.Module;
@@ -17,7 +17,8 @@ import org.eclipse.framework.webf.demo.service.LoginService;
 
 @Module(name = "user",desc="用户模块")
 public class LoginController {
-	@Inject
+	
+	@AutoFind
 	private LoginService loginService;
 	
 
@@ -29,7 +30,7 @@ public class LoginController {
 	@JSON
 	@Handler(value = "getStudent")
 	public List<Map<String,String>> getTest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		return loginService.findAllStudent();
+		return loginService.getUserPay();
 	}
 
 	@JSON

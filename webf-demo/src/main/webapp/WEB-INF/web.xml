@@ -5,15 +5,11 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
 	<filter>
-		<filter-name>DispatherFilter</filter-name>
-		<filter-class>cn.mike.app.framework.DispatherFilter</filter-class>
-		<init-param>
-			<param-name>scanPackage</param-name>
-			<param-value>cn.mike.app</param-value>
-		</init-param>
+		<filter-name>WebFilter</filter-name>
+		<filter-class>org.eclipse.framework.webf.core.mvc.WebFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>DispatherFilter</filter-name>
+		<filter-name>WebFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 </web-app>
