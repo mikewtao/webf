@@ -4,7 +4,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.framework</groupId>
+		<groupId>com.github.mikewtao.framework</groupId>
 		<artifactId>webf</artifactId>
 		<version>0.1</version>
 	</parent>
@@ -14,7 +14,7 @@
 	<url>https://github.com/mikewtao/webf</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.framework</groupId>
+			<groupId>com.github.mikewtao.framework</groupId>
 			<artifactId>webf-core</artifactId>
 		</dependency>
 		<dependency>
