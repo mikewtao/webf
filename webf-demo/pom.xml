@@ -4,19 +4,18 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eclipse.framework</groupId>
+		<groupId>com.github.framework</groupId>
 		<artifactId>webf</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.1</version>
 	</parent>
 	<artifactId>webf-demo</artifactId>
 	<packaging>war</packaging>
-	<name>webf-demo Maven Webapp</name>
-	<url>http://maven.apache.org</url>
+	<name>webf-demo Webapp</name>
+	<url>https://github.com/mikewtao/webf</url>
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse.framework</groupId>
+			<groupId>com.github.framework</groupId>
 			<artifactId>webf-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -38,16 +37,15 @@
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
-			<version>11.2.0.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>3.0.8</version>
 		</dependency>
 	</dependencies>
 	<build>
 		<finalName>webf-demo</finalName>
+		<!-- jetty 插件 -->
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
