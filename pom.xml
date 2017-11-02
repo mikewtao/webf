@@ -31,6 +31,7 @@
 		<spring.context.version>4.3.12.RELEASE</spring.context.version>
 		<slf4j.api>1.7.21</slf4j.api>
 		<slf4j.log4j12>1.7.21</slf4j.log4j12>
+		<druid.version>1.1.5</druid.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -88,6 +89,12 @@
 				<version>${mysql.connector.version}</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${druid.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<build>

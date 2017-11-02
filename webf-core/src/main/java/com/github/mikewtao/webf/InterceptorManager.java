@@ -43,7 +43,7 @@ public class InterceptorManager {
 	}
 	public static void handleInterceptor(Interceptor interceptor, String clstr) {
 		String uri=interceptor.url();
-		InterceptorAdapter interapt=(InterceptorAdapter) webfUtil.initClass(clstr);
+		InterceptorAdapter interapt=(InterceptorAdapter) webfUtil.loadClass(clstr);
 		List<InterceptorAdapter> list=InterceptorManager.interceptorMap.get(uri);
 		if(list==null){
 			list=new ArrayList<>();

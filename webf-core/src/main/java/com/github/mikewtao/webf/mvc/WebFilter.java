@@ -33,7 +33,7 @@ public class WebFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String urlpath = getRequestUri(request);
-		UrlHandler params = WebfConf.urlHandlerMap.get(urlpath);
+		Controller params = WebfConf.urlHandlerMap.get(urlpath);
 		if (urlpath.endsWith(".jsp") || urlpath.endsWith(".css") || urlpath.endsWith(".js") ||urlpath.endsWith(".jpg")
 				|| urlpath.endsWith(".png")||urlpath.endsWith(".html")) {// 过滤静态资源
 			return ;

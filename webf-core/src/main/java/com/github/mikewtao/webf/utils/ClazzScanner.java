@@ -6,15 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ClassScan {
-	private static ClassScan classScan = new ClassScan();
-	private static String basePath = ClassScan.class.getResource("/").getPath();
+public class ClazzScanner {
+	private static ClazzScanner classScan = new ClazzScanner();
+	private static String basePath = ClazzScanner.class.getResource("/").getPath();
 	private static Set<String> clazzset = new HashSet<>();
 
-	private ClassScan() {
+	private ClazzScanner() {
 	};
 
-	public static ClassScan getClassScan() {
+	public static ClazzScanner getClassScan() {
 		ScanAllClasses(basePath.substring(0, basePath.length() - 1), clazzset);
 		return classScan;
 	}

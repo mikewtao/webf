@@ -4,20 +4,25 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+
+import javax.sql.DataSource;
+
+import com.github.mikewtao.webf.utils.ClazzScanner;
 
 public class JdbcUtil {
-	private static ComboPooledDataSource cpds;
+	private static DataSource ds;
 	static {
 		try {
-			cpds = new ComboPooledDataSource("oracle");
+		    Class<?> dsclzz=ClazzScanner.getClassScan().getClassByInterface(InitDataSource.class).get(0);
+		    InitDataSource init=(InitDataSource) dsclzz.newInstance();
+		    ds= init.initDataSource();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static Connection getConnection() throws Exception {
-		return cpds.getConnection();
+		return ds.getConnection();
 	}
 
 	public static void release(Connection conn, PreparedStatement ps, ResultSet rs) {

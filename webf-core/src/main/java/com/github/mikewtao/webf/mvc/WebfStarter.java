@@ -14,7 +14,7 @@ import com.github.mikewtao.webf.annotation.AutoFind;
 import com.github.mikewtao.webf.annotation.Handler;
 import com.github.mikewtao.webf.annotation.Interceptor;
 import com.github.mikewtao.webf.annotation.Module;
-import com.github.mikewtao.webf.utils.ClassScan;
+import com.github.mikewtao.webf.utils.ClazzScanner;
 import com.github.mikewtao.webf.utils.webfUtil;
 
 public final class WebfStarter {
@@ -24,12 +24,12 @@ public final class WebfStarter {
 		return new WebfStarter();
 	}
 
-	private static ClassScan classScan = ClassScan.getClassScan();
+	private static ClazzScanner classScan = ClazzScanner.getClassScan();
 
 	public void initWebf() throws Exception {
 		Set<String> clzzSet = classScan.getClazzset();
 		for (String clstr : clzzSet) {
-			Object obj = webfUtil.initClass(clstr);// 加载类
+			Object obj = webfUtil.loadClass(clstr);// 加载类
 			if (obj == null) {
 				continue;
 			}
@@ -52,7 +52,7 @@ public final class WebfStarter {
 	private void MappingHandler(Object obj, Module moduleAnotation) {
 		Method[] methods = obj.getClass().getMethods();
 		for (Method m : methods) {
-			UrlHandler param = new UrlHandler();
+			Controller param = new Controller();
 			StringBuilder sb = new StringBuilder("/");
 			String moduleName = moduleAnotation.name();
 			sb.append(moduleName);
