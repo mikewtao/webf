@@ -8,5 +8,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Handler {
+
 	String value() default "";
+
+	String path() default "";
+
+	RequestMethod[] method() default {};
+
 }

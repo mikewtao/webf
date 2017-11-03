@@ -5,7 +5,7 @@ package com.github.mikewtao.webf.mvc;
  */
 public class URIMapping {
 	private URI uri;// url
-	private Controller controller;// 处理器
+	private WebController controller;// 处理器
 
 	public URI getUri() {
 		return uri;
@@ -15,11 +15,11 @@ public class URIMapping {
 		this.uri = uri;
 	}
 
-	public Controller getController() {
+	public WebController getController() {
 		return controller;
 	}
 
-	public void setController(Controller controller) {
+	public void setController(WebController controller) {
 		this.controller = controller;
 	}
 

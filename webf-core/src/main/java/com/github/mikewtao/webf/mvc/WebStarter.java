@@ -13,15 +13,16 @@ import com.github.mikewtao.webf.WebfConf;
 import com.github.mikewtao.webf.annotation.AutoFind;
 import com.github.mikewtao.webf.annotation.Handler;
 import com.github.mikewtao.webf.annotation.Interceptor;
-import com.github.mikewtao.webf.annotation.Module;
+import com.github.mikewtao.webf.annotation.RequestMethod;
+import com.github.mikewtao.webf.annotation.Controller;
 import com.github.mikewtao.webf.utils.ClazzScanner;
 import com.github.mikewtao.webf.utils.webfUtil;
 
-public final class WebfStarter {
-	private static Logger logger = LoggerFactory.getLogger(WebfStarter.class);
+public final class WebStarter {
+	private static Logger logger = LoggerFactory.getLogger(WebStarter.class);
 
-	public static WebfStarter getWebfStarter() {
-		return new WebfStarter();
+	public static WebStarter getWebfStarter() {
+		return new WebStarter();
 	}
 
 	private static ClazzScanner classScan = ClazzScanner.getClassScan();
@@ -33,37 +34,52 @@ public final class WebfStarter {
 			if (obj == null) {
 				continue;
 			}
-			Module moduleAnotation = obj.getClass().getAnnotation(Module.class);// 扫描module
-			Interceptor interceptor=obj.getClass().getAnnotation(Interceptor.class);//拦截器
-			if(interceptor!=null){
-				InterceptorManager.handleInterceptor(interceptor,clstr);
+			// URI uri=new URI();
+			Interceptor interceptor = obj.getClass().getAnnotation(Interceptor.class);// 拦截器
+			if (interceptor != null) {
+				InterceptorManager.handleInterceptor(interceptor, clstr);
+				continue;
 			}
-			Field[] fields = obj.getClass().getDeclaredFields();
-			if(moduleAnotation!=null){
-				MappingHandler(obj, moduleAnotation);// 映射处理器
+			Controller controllerAnotation = obj.getClass().getAnnotation(Controller.class);// 扫描module
+			if (controllerAnotation != null) {
+				// URI=
+				uriMapping(obj, controllerAnotation);// 映射处理器
+				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
-					injectClass(obj, field);
+					injectClass(obj, field);// 注入依赖
 				}
 			}
-			
+
 		}
 	}
-	
-	private void MappingHandler(Object obj, Module moduleAnotation) {
+
+	private void uriMapping(Object obj, Controller controllerAnotation) {
 		Method[] methods = obj.getClass().getMethods();
 		for (Method m : methods) {
-			Controller param = new Controller();
-			StringBuilder sb = new StringBuilder("/");
-			String moduleName = moduleAnotation.name();
-			sb.append(moduleName);
+			URI uri = new URI();
+			WebController controller = new WebController();
+			StringBuilder sb = new StringBuilder();
+			String controllerPath = controllerAnotation.value();
+			if (controllerPath.indexOf("/") == -1) {
+				sb = new StringBuilder("/");
+			}
+			sb.append(controllerPath);
 			sb.append("/");
-			param.setClazz(obj);
+			controller.setClazz(obj);// controller clzz
+			WebHandler handler = new WebHandler();
+			handler.setMethod(m);
 			Handler p = m.getAnnotation(Handler.class);
 			if (p != null) {
-				sb.append(p.value());
-				param.setMethod(m);
-				logger.info("url:{} class:{} -> method:{}", new Object[] { sb.toString(),obj.getClass().getName(),m.getName()});
-				WebfConf.urlHandlerMap.put(sb.toString(), param);
+				RequestMethod[] reqmethod = p.method();
+				handler.setReqMethod(reqmethod);
+				controller.setHandler(handler);
+				sb.append(p.path());
+				uri.setKey(sb.toString());
+				uri.setUrl(sb.toString());
+				uri.setController(controller);
+				logger.info("url:{} class:{} -> method:{}",
+						new Object[] { sb.toString(), obj.getClass().getName(), m.getName() });
+				WebfConf.urilist.add(uri);
 			}
 		}
 	}

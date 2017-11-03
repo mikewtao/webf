@@ -10,31 +10,32 @@ import javax.servlet.http.HttpServletResponse;
 import com.github.mikewtao.webf.annotation.AutoFind;
 import com.github.mikewtao.webf.annotation.Handler;
 import com.github.mikewtao.webf.annotation.JSON;
-import com.github.mikewtao.webf.annotation.Module;
+import com.github.mikewtao.webf.annotation.RequestMethod;
+import com.github.mikewtao.webf.annotation.Controller;
 import com.github.mikewtao.webf.demo.pojo.ExpressDetail;
 import com.github.mikewtao.webf.demo.service.LoginService;
 
 
-@Module(name = "user",desc="用户模块")
+@Controller("user")
 public class LoginController {
 	
 	@AutoFind
 	private LoginService loginService;
 	
 
-	@Handler(value = "logout")
+	@Handler(method=RequestMethod.GET,path="/getTestView")
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
 		return "WEB-INF/jsp/test.html";
 	}
 
 	@JSON
-	@Handler(value = "getStudent")
+	@Handler("/getStudent")
 	public List<Map<String,String>> getTest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		return loginService.getUserPay();
 	}
 
 	@JSON
-	@Handler(value = "getExpressDetail")
+	@Handler("getExpressDetail")
 	public ExpressDetail getExpressDetail(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		ExpressDetail detail = new ExpressDetail();
 		detail.setExpress_id("1001");

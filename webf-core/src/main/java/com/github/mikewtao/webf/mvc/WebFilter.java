@@ -20,6 +20,7 @@ import com.github.mikewtao.webf.ViewResolve;
 import com.github.mikewtao.webf.WebfConf;
 import com.github.mikewtao.webf.XmlViewResolver;
 import com.github.mikewtao.webf.annotation.JSON;
+import com.github.mikewtao.webf.annotation.RequestMethod;
 import com.github.mikewtao.webf.annotation.XML;
 import com.github.mikewtao.webf.exception.InitializedException;
 import com.github.mikewtao.webf.utils.JavaassitUtil;
@@ -33,7 +34,7 @@ public class WebFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String urlpath = getRequestUri(request);
-		Controller params = WebfConf.urlHandlerMap.get(urlpath);
+		WebController params = WebfConf.findController(urlpath);
 		if (urlpath.endsWith(".jsp") || urlpath.endsWith(".css") || urlpath.endsWith(".js") ||urlpath.endsWith(".jpg")
 				|| urlpath.endsWith(".png")||urlpath.endsWith(".html")) {// 过滤静态资源
 			return ;
@@ -44,7 +45,11 @@ public class WebFilter implements Filter {
 		if (params != null) {
 			try {
 				Object obj = params.getClazz();// module
-				Method m = params.getMethod();// handler
+				Method m = params.getHandler().getMethod();// handler
+				RequestMethod[] reqMethods=params.getHandler().getReqMethod();
+				if(checkReqMethod(reqMethods,request)){
+					return ;
+				}
 				Class<?>[] paramClzz = m.getParameterTypes();
 				String[] names = JavaassitUtil.getParams(obj.getClass(), m.getName());// 获取方法参数名称
 				ParamInjector paramInjector = new ParamInjector(request, response, paramClzz, names);
@@ -57,6 +62,17 @@ public class WebFilter implements Filter {
 		} else {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);// 返回404
 		}
+	}
+
+	private boolean checkReqMethod(RequestMethod[] reqMethods, HttpServletRequest request) {
+		String method=request.getMethod();
+		for(RequestMethod reqMethod:reqMethods){
+			if(reqMethod.compareTo(reqMethod.valueOf(method))==0){
+				return true;
+			}
+		}
+		return false;
+		
 	}
 
 	private String getRequestUri(HttpServletRequest request) {
@@ -144,7 +160,7 @@ public class WebFilter implements Filter {
 		try {
 			String contextPath = filterConfig.getServletContext().getContextPath();
 			WebfConf.initPath(contextPath);
-			WebfStarter.getWebfStarter().initWebf();
+			WebStarter.getWebfStarter().initWebf();
 		} catch (Exception e) {
 			throw new InitializedException("webf Initialized Error", e);
 		}

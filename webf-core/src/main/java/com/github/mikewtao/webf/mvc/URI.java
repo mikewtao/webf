@@ -1,23 +1,18 @@
 package com.github.mikewtao.webf.mvc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.github.mikewtao.webf.InterceptorAdapter;
+import com.github.mikewtao.webf.utils.webfUtil;
 
 public class URI {
 	private String key;// 根据请求url生成的key
 	private String url;// uri
-	private List<InterceptorAdapter> interceptors = new ArrayList<>();// url拦截器
+	private WebController controller;//处理器
 
 	public String getKey() {
 		return key;
 	}
 
 	public void setKey(String key) {
-		this.key = key;
+		this.key = webfUtil.base64Encoder(key);
 	}
 
 	public String getUrl() {
@@ -28,12 +23,15 @@ public class URI {
 		this.url = url;
 	}
 
-	public List<InterceptorAdapter> getInterceptors() {
-		return interceptors;
+
+	public WebController getController() {
+		return controller;
 	}
 
-	public void setInterceptors(List<InterceptorAdapter> interceptors) {
-		this.interceptors = interceptors;
+	public void setController(WebController controller) {
+		this.controller = controller;
 	}
+	
+	
 
 }
