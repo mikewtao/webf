@@ -48,6 +48,10 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.alipay.jarslink</groupId>
+			<artifactId>jarslink-api</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>webf-core</finalName>
